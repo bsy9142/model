@@ -1,4 +1,4 @@
-;+
+﻿;+
 ; NAME:
 ;
 ;    cal_ACE
@@ -231,7 +231,7 @@
 ;1996 Pacific hurricane season  53  9  5  2 Below normal 
 ;2007 Pacific hurricane season  53 11  4  1 Below normal 
 ;2010 Pacific hurricane season  49  7  3  2 Below normal 
-;1977 Pacific hurricane season  22  8  4  0 Below normal;
+;1977 Pacific hurricane season  22  8  4  0 Below normal
 
 ;Mean 1971-2009: 127.07
 
@@ -284,5 +284,5 @@ function cal_ACE, V, unit = unit, Vmin = Vmin
     ACE = ACE + V(i_v)^2
   endfor
   
-  return, ACE
+  return, 0.0001 * ACE
 end

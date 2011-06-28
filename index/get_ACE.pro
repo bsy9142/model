@@ -58,8 +58,8 @@
 ; EXAMPLE:
 ;
 ; MODIFICATION_HISTORY:
-;    Weihua FANG, weihua.fang@gmail.com. June, 28, 2011
-;    many errors in previous code, so rewrite the whole thing.
+;    Written by Weihua FANG, weihua.fang@gmail.com. June, 28, 2011
+;    Many errors in previous code (cal_ACE). So rewrite the whole thing.
 
 function get_ACE, V, threshold = threshold, unit = unit
 

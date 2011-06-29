@@ -17,7 +17,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_WHI (Vm, Rh, Vt, Vm0 = Vm0, Rh0 = sRh0, Vt0 = Vt0, a = a, b = b, c = c, aa = aa, bb = bb, cc = cc)
+;    result = get_WHI (Vm, Rh, Vt, Vm0 = Vm0, unit = unit, Rh0 = sRh0, Vt0 = Vt0, a = a, b = b, c = c, aa = aa, bb = bb, cc = cc)
 ;
 ; ARGUMENTS:
 ;
@@ -29,6 +29,9 @@
 ;    position next moment - center position current moment)/(6*3600)
 ;
 ; KEYWORDS:
+;
+;    unit     : the unit of wind speed. default is knot (unit = 0), 
+;    m/s (unit = 1), or km/h (unit =2)
 ;    Vm0: 33m/s
 ;    Rh0: radius of Lv.12,reference value: 96.9km
 ;         radius of Lv.10,reference value: 115.0km
@@ -48,11 +51,24 @@
 ;    add some checking code
 ;-
 
-function cal_WHI, Vm, Rh, Vt, Vm0 = Vm0, Rh0 = Rh0, Vt0 = Vt0, a = a, b = b, c = c, aa = aa, bb = bb, cc = cc
+function cal_WHI, Vm, Rh, Vt, unit = unit, Vm0 = Vm0, Rh0 = Rh0, Vt0 = Vt0, a = a, b = b, $
+                  c = c, aa = aa, bb = bb, cc = cc
   
   ; Return to caller on an error.
   On_Error, 2
    
+  if keyword_set(unit) then begin
+    CASE unit OF
+      0: unit_mutiplier = 1
+      1: unit_mutiplier = 1.94384449
+      2: unit_mutiplier = 0.539956
+      ELSE: return, -1
+    ENDCASE
+    if keyword_set(Vm) then Vm = Vm * unit_mutiplier
+    if keyword_set(Vt) then Vt = Vt * unit_mutiplier
+    if keyword_set(Vm0) then Vm0 = Vm0 * unit_mutiplier
+    if keyword_set(Vt0) then Vt0 = Vt0 * unit_mutiplier
+   endif
   if ~ keyword_set(Vm0) then Vm0 = 33
   if ~ keyword_set(Rh0) then Rh0 = 200
   if ~ keyword_set(Vt0) then Vm0 = 7.72

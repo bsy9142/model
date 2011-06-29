@@ -17,7 +17,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_BHI (Pc, Prec, Rh, Vt, T, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0)
+;    result = get_BHI (Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0)
 ;
 ; ARGUMENTS:
 ;
@@ -30,6 +30,9 @@
 ;    T: the number of cyclone center points landed until current moment or entire typhoon process. 
 ;
 ; KEYWORDS:
+;
+;    unit     : the unit of wind speed. default is knot (unit = 0), 
+;    m/s (unit = 1), or km/h (unit =2)
 ;    Pc0: 40hPa
 ;    Prec0: 440 mm
 ;    Vt: 8m/s
@@ -48,11 +51,21 @@
 ;    add some checking code
 ;-
 
-function cal_BHI, Pc, Prec, Rh, Vt, T, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0
+function cal_BHI, Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0
 
   ; Return to caller on an error.
   On_Error, 2
   
+    if keyword_set(unit) then begin
+    CASE unit OF
+      0: unit_mutiplier = 1
+      1: unit_mutiplier = 1.94384449
+      2: unit_mutiplier = 0.539956
+      ELSE: return, -1
+    ENDCASE
+    if keyword_set(Vt) then Vt = Vt * unit_mutiplier
+    if keyword_set(Vt0) then Vt0 = Vt0 * unit_mutiplier
+  endif
   if ~ keyword_set(Pc0) then Pc0 = 40
   if ~ keyword_set(Prec0) then Prec0 = 440
   if ~ keyword_set(Vt0) then Vt0 = 8

@@ -15,7 +15,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_CHI (Vm, Rh, Vm0=Vm0, Rh0=Rh0)
+;    result = get_CHI (Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0)
 ;
 ; ARGUMENTS:
 ;
@@ -25,6 +25,9 @@
 ;     wind).In this case,it's radius of Lv.8 wind
 ;
 ; KEYWORDS:
+;
+;    unit     : the unit of wind speed. default is knot (unit = 0), 
+;    m/s (unit = 1), or km/h (unit =2)
 ;    Vm0: 33m/s
 ;    Rh0: radius of Lv.12,reference value: 96.9km
 ;         radius of Lv.10,reference value: 115.0km
@@ -40,10 +43,20 @@
 ;    add some checking code
 ;-
 
-function get_CHI, Vm, Rh, Vm0=Vm0, Rh0=Rh0
+function get_CHI, Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0
   ; Return to caller on an error.
   On_Error, 2
   
+  if keyword_set(unit) then begin
+    CASE unit OF
+      0: unit_mutiplier = 1
+      1: unit_mutiplier = 1.94384449
+      2: unit_mutiplier = 0.539956
+      ELSE: return, -1
+    ENDCASE
+    if keyword_set(Vm) then Vm = Vm * unit_mutiplier
+    if keyword_set(Vm0) then Vm0 = Vm0 * unit_mutiplier
+  endif
   if ~ keyword_set(Vm0) then Vm0 = 33
   if ~ keyword_set(Rh0) then Rh0 = 200
   return, (Vm/Vm0)^3 + 1.5 * (Rh/Rh0) * (Vm/Vm0)^2

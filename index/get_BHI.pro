@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;
-;    calculate the BHI (BNU Hurricane Index), built by Professor Weihua Fang research team 
+;    calculate the BHI (BNU Hurricane Index), developed by Liying, etc. from Professor Weihua Fang Team 
 ;    in Mar 2007. It's based on Chinese historical typhoon track and disaster statistics, 
 ;    shows Chinese typhoon integrated hazard level
 ;    BHI = (((1010 - Pc)/Pc0)^3 + (Prec/Prec0)^3) * (Rh/Rh0) * (Vt/Vt0) * t

@@ -81,7 +81,7 @@ function get_ACE, V, threshold = threshold, unit = unit
   ; set wind threshold (default, 35 kt)
   if ~keyword_set(threshold) then begin
     threshold = 35.0
-  endelse
+  endif
   
   ; calculate and return ACE
   subscript_tmp = where (V GE threshold, count_tmp)

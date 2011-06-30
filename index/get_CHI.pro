@@ -26,8 +26,8 @@
 ;
 ; KEYWORDS:
 ;
-;    unit     : the unit of wind speed. default is knot (unit = 0), 
-;    m/s (unit = 1), or km/h (unit =2)
+;    unit: the unit of wind speed. default is m/s (unit = 1), 
+;    knot (unit = 0), or km/h (unit =2)
 ;    Vm0: 33m/s
 ;    Rh0: radius of Lv.12,reference value: 96.9km
 ;         radius of Lv.10,reference value: 115.0km
@@ -49,9 +49,9 @@ function get_CHI, Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0
   
   if keyword_set(unit) then begin
     CASE unit OF
-      0: unit_mutiplier = 1
-      1: unit_mutiplier = 1.94384449
-      2: unit_mutiplier = 0.539956
+      0: unit_mutiplier = 0.51444
+      1: unit_mutiplier = 1
+      2: unit_mutiplier = 0.27778
       ELSE: return, -1
     ENDCASE
     if keyword_set(Vm) then Vm = Vm * unit_mutiplier

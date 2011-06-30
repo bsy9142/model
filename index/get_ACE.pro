@@ -22,7 +22,7 @@
 ;    sustained velocity of every active tropical storm (wind speed 35 knots (65 km/h) or
 ;    higher), at six-hour intervals. If any storms of a season happen to cross years, the
 ;    storm's ACE counts for the previous year.[2] The numbers are usually divided by 10,000
-;    to make them more manageable. The unit of ACE is 104 kt2, and for use as an index the
+;    to make them more manageable. The unit of ACE is 10000 kt2, and for use as an index the
 ;    unit is assumed. Thus:
 
 ;       ACE = 10^(-4) * Σ (Vmax^2), where vmax is estimated sustained wind speed in
@@ -47,7 +47,7 @@
 ;
 ; KEYWORDS:
 ;
-;    threshold: the threshold of wind speed. default is 35 knot. The unit of V and threshold 
+;    threshold: the threshold of wind speed. Default is 35 knots. The unit of V and threshold 
 ;    must be the same unit     : the unit of wind speed. default is knot (unit = 0), 
 ;    m/s (unit = 1), or km/h (unit =2)
 ;
@@ -75,7 +75,7 @@ function get_ACE, V, threshold = threshold, unit = unit
       ELSE: return, -1
     ENDCASE
     V = V * unit_mutiplier
-    if keyword(threshold) then threshold = threshold * unit_mutiplier
+    if keyword_set(threshold) then threshold = threshold * unit_mutiplier
   endif
   
   ; set wind threshold (default, 35 kt)

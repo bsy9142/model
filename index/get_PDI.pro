@@ -13,7 +13,7 @@
 ;    calculate the PDI (Power Dissipation Index)
 ;    PDI stands for Power Dissipation Index, show striking variations from year to year and 
 ;    on longer time scales (Bell et al. 2000).
-;       PDI = 0.0001 * Σ （v^3)
+;       PDI = 0.000001 * Σ （v^3)
 ;
 ; CALLING SEQUENCE:
 ;
@@ -54,7 +54,7 @@ function get_PDI, V, unit = unit
     V = V * unit_mutiplier
   endif
   
-  ; calculate and return ACE
-    return, 0.0001 * total(V_ACE^3)
+  ; calculate and return PDI
+    return, 0.000001 * total(V^3)
   
 end

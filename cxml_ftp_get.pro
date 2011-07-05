@@ -1,7 +1,7 @@
 ;+
 ; NAME:
 ;
-;    cxml_ftp_download
+;    cxml_ftp_get
 ;
 ; AUTHOR:
 ;
@@ -18,12 +18,12 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = cxml_ftp_get(ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
-;             local_dir = local_dir)
+;    dummy = cxml_ftp_get, ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
+;    local_dir = local_dir, time_range = time_range, time_interval = time_interval, time_end
 ;
 ; ARGUMENTS:
 ;
-;    ftp_server: A string vector of ftp server addresses
+;    cxml_ftp_get: A string vector of ftp server addresses
 ;    remote_dir: A string vector of remote directory in ftp server
 ;
 ; KEYWORDS:
@@ -31,14 +31,16 @@
 ;    remote_file_list: A string vector of download files. If it's given, program will download
 ;    files included in the list; otherwise, it will download all the files in the remote directory
 ;    local_dir: A string of local disk directory. If it's given, program will download files in it;
-;    otherwise, program will download files in the folder of current IDL procedure file. 
+;    otherwise, program will download files in the folder of current IDL procedure file.
+;    time_range: the starting and ending time for downloading files. if not set, 
+;    download files only once by call function ftp_get();otherwise, call ftp_get_timer()
+;    time_interval: time interval to check whether new files are available to get from sever. 
+;    Only valid if keyword 'time_range is' set 
 ;
 ; OUTPUTS:
 ;
 ;    1：  Download successfully
-;    0: Download failed for such reasons:
-;      a. no match file of remote file list is in the ftp server
-;      b. ftp server connection failed
+;    0: Download failed
 ;
 ; EXAMPLE:
 ;
@@ -170,7 +172,7 @@ function ftp_get, ftp_server, remote_dir, remote_file_list = remote_file_list, $
 end
 
 function ftp_get_timer, ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
-    local_dir = local_dir, time_range = time_range, time_interval = time_interval, time_end
+    local_dir = local_dir, time_range = time_range, time_interval = time_interval
     
 end
 
@@ -181,6 +183,6 @@ local_dir = local_dir, time_range = time_range, time_interval = time_interval, t
             local_dir = local_dir)
   endif else begin
     dummy = ftp_get_timer(ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
-    local_dir = local_dir, time_range = time_range, time_interval = time_interval, time_end)
+    local_dir = local_dir, time_range = time_range, time_interval = time_interval)
   endelse
 end

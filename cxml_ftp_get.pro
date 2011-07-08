@@ -11,19 +11,18 @@
 ; PURPOSE:
 ;
 ;    Download cxml files from ftp/http website
-;    function to improve:
-;      1. recursively search remoter directory
-;      2. batch download of http protocol(now can only download one by one manually)
+;    remaining problems:
+;      cannot check server update when remote_file_list not be set
 ;
 ; CALLING SEQUENCE:
 ;
-;    dummy = cxml_ftp_get(ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
+;    result = cxml_ftp_get(ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
 ;    local_dir = local_dir)
 ;
 ; ARGUMENTS:
 ;
-;    cxml_ftp_get: A string vector of ftp server addresses
-;    remote_dir: A string vector of remote directory in ftp server
+;    ftp_server: A string of ftp server addresses
+;    remote_dir: A string of remote directory in ftp server
 ;
 ; KEYWORDS:
 ;
@@ -36,7 +35,7 @@
 ;
 ;    1：  Download successfully
 ;    0: Download unfinished because:
-;      a. no update in ftp server, doesn't need to download
+;      a. no update in ftp server, no need to download
 ;      b. no match files in ftp server
 ;
 ; EXAMPLE:
@@ -49,6 +48,8 @@
 ;    Yuguo Wu, irisksys@gmail.com, July 6th, 2011
 ;    Add remote file list selection, divide ftp server and remote dir into two arguments
 ;    and check ftp server update 
+;    Yuguo Wu, irisksys@gmail.com, July 8th, 2011
+;    Add recursive download and modified some files check
 ;
 function check_update, remote_file_list, get_dir
   ; get all the local directory files
@@ -57,24 +58,56 @@ function check_update, remote_file_list, get_dir
     local_file_list[i_local] = strmid(local_file_list[i_local], strpos(local_file_list[i_local],$
     '\', /REVERSE_SEARCH)+1)
   endfor
-  ; remote file list is completely equal to local file list, which means no update in server
-  if array_equal(remote_file_list,local_file_list) eq 1 then begin
-    return, ['1']
-  endif else begin
+
   ; list files to be downloaded. Pass existed files
-    for i_remote = 0, n_elements(remote_file_list) - 1 do begin
-      flag_exist = 0
-      for i_local = 0, n_elements(local_file_list) - 1 do begin
-        if strcmp(remote_file_list[i_remote], local_file_list[i_local]) eq 1 then begin
-          flag_exist = 1
-          break
-        endif
-      endfor
-      if flag_exist eq 1 then remote_file_list[i_remote] = 'null'
+  flag_total_exist = 0
+  for i_remote = 0, n_elements(remote_file_list) - 1 do begin
+    flag_exist = 0
+    for i_local = 0, n_elements(local_file_list) - 1 do begin
+      if strcmp(remote_file_list[i_remote], local_file_list[i_local]) eq 1 then begin
+        flag_exist = 1
+        break
+      endif
     endfor
+    if flag_exist eq 1 then begin
+      remote_file_list[i_remote] = 'null'
+    endif else begin
+      flag_total_exist =1
+    endelse
+  endfor
+  if flag_total_exist eq 0 then return, ['0'] else begin
     remote_file_list = remote_file_list[where(strcmp(remote_file_list, 'null') eq 0)]
     return, remote_file_list
   endelse
+end
+
+function get_recursion, cxml_get, get_dir, remote_file_list
+  cxml_get->GetProperty, URL_PATH = path
+  origin_path = path
+  
+  ;test whether the link is a directory. If yes, enter into it; otherwise, download file 
+  for i_list = 0, n_elements(remote_file_list) - 1 do begin
+    if strpos(remote_file_list[i_list], 'xml') eq -1 then begin
+      cxml_get->SetProperty, URL_PATH = path + remote_file_list[i_list]
+      dir_next_level = cxml_get->GetFtpDirList()
+      for i_next = 0, n_elements(dir_next_level) - 1 do begin
+        dir_next_level[i_next] = strmid(dir_next_level[i_next], $
+        strpos(dir_next_level[i_next], ' ', $
+        /REVERSE_SEARCH)+1)
+      endfor
+      next_dir = get_dir + '\' + remote_file_list[i_list]
+      if ~file_test(next_dir) then file_mkdir, next_dir else begin
+        dir_next_level = check_update(dir_next_level, next_dir)
+        if array_equal(dir_next_level, ['0']) eq 1 then continue 
+      result = get_recursion(cxml_get, next_dir, dir_next_level)
+      cxml_get->SetProperty, URL_PATH = origin_path
+      endelse
+    endif else begin
+      cxml_get->SetProperty, URL_PATH = path + '/' + remote_file_list[i_list]
+      cxml_file = cxml_get->Get(FILENAME = get_dir + '\' + remote_file_list[i_list])
+      print, 'downloaded: ', cxml_file
+    endelse
+  endfor
 end
 
 function cxml_ftp_get, ftp_server, remote_dir, remote_file_list = remote_file_list, $ 
@@ -91,43 +124,44 @@ function cxml_ftp_get, ftp_server, remote_dir, remote_file_list = remote_file_li
   
   ; set ftp properties
   cxml_get = OBJ_NEW('IDLnetUrl')
-  for i_url = 0, n_elements(ftp_server) - 1 do begin
-    urlComponents = parse_url(ftp_server[i_url])
-    cxml_get->SetProperty, URL_SCHEME = urlComponents.scheme
-    cxml_get->SetProperty, URL_HOST = urlComponents.host
-    cxml_get->SetProperty, URL_USERNAME = urlComponents.username
-    cxml_get->SetProperty, URL_PASSWORD = urlComponents.password
-        
+  urlComponents = parse_url(ftp_server)
+  cxml_get->SetProperty, URL_SCHEME = urlComponents.scheme
+  cxml_get->SetProperty, URL_HOST = urlComponents.host
+  cxml_get->SetProperty, URL_PATH = urlComponents.path + remote_dir
+  cxml_get->SetProperty, URL_USERNAME = urlComponents.username
+  cxml_get->SetProperty, URL_PASSWORD = urlComponents.password
+  
   ; build directory for every ftp server downloading
-    cxml_get->GetProperty, URL_HOST = host
-    get_dir = root_dir + host
-    if ~file_test(get_dir) then file_mkdir, get_dir
+  cxml_get->GetProperty, URL_HOST = host, URL_PATH = path
+  get_dir = root_dir + host
+  if ~file_test(get_dir) then file_mkdir, get_dir
             
   ; set remote download list
-    get_list = cxml_get->GetFtpDirList()
-    for i_list = 0, n_elements(get_list) - 1 do begin
-        get_list[i_list] = strmid(get_list[i_list], strpos(get_list[i_list], ' ', $
-        /REVERSE_SEARCH)+1)
-    endfor
-  ; no remote file list setting, download all the files in the server
-    if ~keyword_set(remote_file_list) then begin
-      remote_file_list = get_list
+  get_list = cxml_get->GetFtpDirList()
+  for i_list = 0, n_elements(get_list) - 1 do begin
+      get_list[i_list] = strmid(get_list[i_list], strpos(get_list[i_list], ' ', $
+      /REVERSE_SEARCH)+1)
+  endfor
+  ; no remote file list setting, download all the files in the server recursively
+  if ~keyword_set(remote_file_list) then begin
+    remote_file_list = get_list
+    result = get_recursion(cxml_get, get_dir, remote_file_list)
   ; remote file list has been set, check the existence in the ftp server
-    endif else begin
-      for i_list = 0, n_elements(remote_file_list) - 1 do begin
-        flag_match = 0
-        for i_get_list = 0, n_elements(get_list) - 1 do begin
-          if strcmp(remote_file_list[i_list], get_list[i_get_list]) eq 1 then begin
-            flag_match = 1
-            break
-          endif
-        endfor
-        if flag_match eq 0 then begin
-          print, 'File: ' + remote_file_list[i_list] + ' not exists'
-          remote_file_list[i_list] = 'null'
+  endif else begin
+    for i_list = 0, n_elements(remote_file_list) - 1 do begin
+      flag_match = 0
+      for i_get_list = 0, n_elements(get_list) - 1 do begin
+        if strcmp(remote_file_list[i_list], get_list[i_get_list]) eq 1 then begin
+          flag_match = 1
+          break
         endif
       endfor
-      
+      if flag_match eq 0 then begin
+        print, 'File: ' + remote_file_list[i_list] + ' not exists'
+        remote_file_list[i_list] = 'null'
+      endif
+    endfor
+
   ; if none of remote file list exists in the ftp server, continue to next ftp server
     flag_none_match = 0
     for i_list = 0, n_elements(remote_file_list) - 1 do begin
@@ -138,26 +172,25 @@ function cxml_ftp_get, ftp_server, remote_dir, remote_file_list = remote_file_li
     endfor
     if flag_none_match eq 0 then begin
       print, 'No match file in the ftp server'
-      continue
+      return, 0 
     endif 
-      remote_file_list = remote_file_list[where(strcmp(remote_file_list, 'null') eq 0)] 
-    endelse
-    
+    remote_file_list = remote_file_list[where(strcmp(remote_file_list, 'null') eq 0)] 
+
   ; check if ftp server has been update. If hasn't, no need to download;otherwise, list
   ; download files that haven't been downloaded yet
     remote_file_list = check_update(remote_file_list, get_dir)
-    if array_equal(remote_file_list, ['1']) then begin
-      print, 'ftp server no update'
-      continue
+    if array_equal(remote_file_list, ['0']) then begin
+      print, 'ftp server: ', host, ', no update'
+      return, 0
     endif
-    
+   
   ; download cxml files
     for i_get = 0, n_elements(remote_file_list) - 1 do begin
       cxml_get->SetProperty, URL_PATH = remote_file_list[i_get]
       cxml_file = cxml_get->Get(FILENAME = get_dir + '\' + remote_file_list[i_get])
       print, 'downloaded: ', cxml_file
     endfor
-  endfor
+  endelse
   OBJ_DESTROY, cxml_get
   return, 1
 end

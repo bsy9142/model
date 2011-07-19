@@ -20,17 +20,14 @@
 ;
 ; ARGUMENTS:
 ;
-;    fn_shape_read: A string of shape file name with full path from which program read
-;    TC index parameters.
+;    fn_shape_read_BEST_C: A string of BEST_C shape file name with full path from which 
+;    program read TC index parameters.
 ;    fn_shape_write_BEST_C: A string of BEST_C shape file name with full path to which 
 ;    program write calculated index.
+;    fn_shape_read_BEST_L: A string of BEST_L shape file name with full path from which 
+;    program read
 ;    fn_shape_write_BEST_L: A string of BEST_L shape file name with full path to which 
 ;    program write calculated index.
-
-; KEYWORDS:
-;    fld_type: field data type
-;    fld_width: field data width
-;    fld_precision: field data precision
 ;
 ; OUTPUTS:
 ;
@@ -81,5 +78,6 @@ function TC_index_calculator, fn_shape_read_BEST_C, fn_shape_write_BEST_C, $
   result = shape_attribute_set(fn_shape_write_BEST_L, 'ACE', ACE[n_elements(V) - 1])
   result = shape_attribute_set(fn_shape_write_BEST_C, 'PDI', PDI)
   result = shape_attribute_set(fn_shape_write_BEST_L, 'PDI', PDI[n_elements(V) - 1])
+  print, shape_attribute_read('L.shp', 'ACE')
   return, 1
 end

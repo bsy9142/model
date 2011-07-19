@@ -1,7 +1,7 @@
-﻿;+
+;+
 ; NAME:
 ;
-;    get_ACE
+;    TC_index_ACE_get
 ;
 ; AUTHOR:
 ;
@@ -39,7 +39,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_ACE (V, threshold = threshold, unit = unit)
+;    result = TC_index_ACE_get (V, threshold = threshold, unit = unit)
 ;
 ; ARGUMENTS:
 ;
@@ -61,7 +61,7 @@
 ;    Written by Weihua FANG, weihua.fang@gmail.com. June, 28, 2011
 ;    Many errors in previous code (cal_ACE). So rewrite the whole thing.
 
-function get_ACE, V, threshold = threshold, unit = unit
+function TC_index_ACE_get, V, threshold = threshold, unit = unit
 
   ; Return to caller on an error.
    On_Error, 2

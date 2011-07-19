@@ -1,7 +1,7 @@
 ;+
 ; NAME:
 ;
-;    get_CHI
+;    TC_index_CHI_get
 ;
 ; AUTHOR:
 ;
@@ -15,7 +15,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_CHI (Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0)
+;    result = TC_index_CHI_get (Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0)
 ;
 ; ARGUMENTS:
 ;
@@ -43,7 +43,7 @@
 ;    add some checking code
 ;-
 
-function get_CHI, Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0
+function TC_index_CHI_get, Vm, Rh, unit = unit, Vm0=Vm0, Rh0=Rh0
   ; Return to caller on an error.
   On_Error, 2
   

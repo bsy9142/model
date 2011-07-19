@@ -1,7 +1,7 @@
 ;+
 ; NAME:
 ;
-;    get_BHI
+;    TC_index_BHI_get
 ;
 ; AUTHOR:
 ;
@@ -17,7 +17,8 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_BHI (Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0)
+;    result = TC_index_BHI_get (Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0,$
+;      Vt0 = Vt0, Rh0 = Rh0)
 ;
 ; ARGUMENTS:
 ;
@@ -51,7 +52,8 @@
 ;    add some checking code
 ;-
 
-function cal_BHI, Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0, Vt0 = Vt0, Rh0 = Rh0
+function TC_index_BHI_get, Pc, Prec, Rh, Vt, T, unit = unit, Pc0 = Pc0, Prec0 = Prec0,$
+  Vt0 = Vt0, Rh0 = Rh0
 
   ; Return to caller on an error.
   On_Error, 2

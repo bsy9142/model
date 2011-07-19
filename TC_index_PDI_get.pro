@@ -1,7 +1,7 @@
 ;+
 ; NAME:
 ;
-;    get_PDI
+;    TC_index_PDI_get
 ;
 ; AUTHOR:
 ;
@@ -17,7 +17,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_PDI (V, unit = unit)
+;    result = TC_index_PDI_get (V, unit = unit)
 ;
 ; ARGUMENTS:
 ;
@@ -38,7 +38,7 @@
 ;    rewrite
 ;-
 
-function get_PDI, V, unit = unit
+function TC_index_PDI_get, V, unit = unit
 
   ; Return to caller on an error.
   On_Error, 2

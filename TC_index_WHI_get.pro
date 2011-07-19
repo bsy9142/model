@@ -1,7 +1,7 @@
 ;+
 ; NAME:
 ;
-;    get_WHI
+;    TC_index_WHI_get
 ;
 ; AUTHOR:
 ;
@@ -17,7 +17,7 @@
 ;
 ; CALLING SEQUENCE:
 ;
-;    result = get_WHI (Vm, Rh, Vt, Vm0 = Vm0, unit = unit, Rh0 = sRh0, Vt0 = Vt0, a = a, b = b, c = c, aa = aa, bb = bb, cc = cc)
+;    result = TC_index_WHI_get (Vm, Rh, Vt, Vm0 = Vm0, unit = unit, Rh0 = sRh0, Vt0 = Vt0, a = a, b = b, c = c, aa = aa, bb = bb, cc = cc)
 ;
 ; ARGUMENTS:
 ;
@@ -51,7 +51,7 @@
 ;    add some checking code
 ;-
 
-function cal_WHI, Vm, Rh, Vt, unit = unit, Vm0 = Vm0, Rh0 = Rh0, Vt0 = Vt0, a = a, b = b, $
+function TC_index_WHI_get, Vm, Rh, Vt, unit = unit, Vm0 = Vm0, Rh0 = Rh0, Vt0 = Vt0, a = a, b = b, $
                   c = c, aa = aa, bb = bb, cc = cc
   
   ; Return to caller on an error.
